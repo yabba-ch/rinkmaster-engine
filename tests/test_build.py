@@ -27,3 +27,11 @@ def test_build_from_fixtures_assembles_full_json():
     assert any(g["status"] == "final" for g in d["games"])
     assert any(g["status"] == "next" for g in d["games"])
     assert d["last_update"] == "19.10.2026 / 22:22:47"
+
+
+def test_teams_enriched_from_primary_ranking():
+    pages = {"index.html": _IDX, "m.html": _M, "a.html": None}
+    disc = discover(_NAV)
+    t = build_tournament(pages, disc, meta={"id": "slo", "name": "SLO", "live": False})
+    hoe = [x for x in t.teams if x.id == "team9"][0]   # CC Thurgau / Höchner, Rang 2
+    assert (hoe.rank, hoe.points, hoe.ends, hoe.stones) == (2, 3, 5, 15)

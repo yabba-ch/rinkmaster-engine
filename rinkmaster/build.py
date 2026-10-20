@@ -31,6 +31,19 @@ def build_tournament(pages: dict[str, str | None], discovery: dict, meta: dict) 
     if teams_page and pages.get(teams_page):
         teams = parse_teams(pages[teams_page])
 
+    # Rang/Punkte/Steine aus der Hauptrangliste in die Teams übernehmen
+    # (per team_id); so trägt jedes Team seine Werte, ohne die Normalisierung
+    # in rankings[] zu verlieren.
+    if rankings and teams:
+        by_id = {row.team_id: row for row in rankings[0].rows if row.team_id}
+        for team in teams:
+            row = by_id.get(team.id)
+            if row:
+                team.rank = row.rank
+                team.points = row.points
+                team.ends = row.ends
+                team.stones = row.stones
+
     games = []
     last_update = None
     if index_html:
