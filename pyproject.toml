@@ -1,0 +1,10 @@
+[project]
+name = "rinkmaster-engine"
+version = "0.1.0"
+description = "Rinkmaster-Resultate -> normalisiertes JSON fuer dynamische Curling-Webseiten"
+requires-python = ">=3.11"
+dependencies = ["beautifulsoup4>=4.12"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

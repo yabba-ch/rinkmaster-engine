@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SLO2026 Superliga Ostschweiz - Gesamtrangliste</title>
+  <meta name="description" content="Rinkmaster">
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <style>
+    /* Basiseinstellungen */
+    :root {
+      --line: #d0d7de;
+      --link: #0000C0;
+      --brand-rgb: 0,255,64;
+      --brand: rgba(var(--brand-rgb), 1);
+      --brand-bright: rgba(var(--brand-rgb), 0.7);
+      --brand-brighter: rgba(var(--brand-rgb), 0.2);
+      --brand-fg: rgb(0,0,0);
+      --fg: #111;
+      --maxw:1000px;
+      --ptop:15px;
+      --hover:#efefef;
+    }
+    
+    body {margin:0; font:14px/1.45 systemui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; color:var(--fg);}
+    #wrap{max-width:var(--maxw); margin:0 auto; padding:0 12px 16px;}
+    a, a:visited {color:var(--link); text-decoration:none;}
+    a:hover {text-decoration:underline;}
+    hr {margin-top:15px; margin-bottom:15px; border:none; border-top: 5px ridge var(--line); border-radius: 6px;}
+    
+    .pagetitle {max-width:var(--maxw); margin:12px auto 8px; padding:8px 12px; text-align:center;font-weight:700; font-size:22px; background:var(--brand); color:var(--brand-fg); border: 1px solid var(--line); border-radius:10px;}
+    .section {padding-top:20px; padding-bottom:10px; font-weight:700; font-size:18px;}
+    
+    /* Generische Flexbox-Settings */
+    .row {display:flex;}
+    .cell {border-right:1px solid var(--line); border-top:1px solid var(--line); align-content:center;}
+    .cell:first-child {border-left:1px solid var(--line);}
+    .row:last-child .cell {border-bottom:1px solid var(--line);}
+    .row.title .cell {background: var(--brand); color:var(--brand-fg); height:30px; font-weight:700;}
+    .row.subtitle .cell {background:var(--brand-bright); color:var(--brand-fg); height:25px; font-weight:700;}
+    .row.subtitle .cell.title {flex:1; padding-left:5px;height:max-content;}
+    .row.subtitle2 .cell {background:var(--brand-brighter); color:var(--fg); height:25px; font-weight:700;}
+    .row.subtitle2 .cell.title {flex:1; padding-left:5px;}
+    .row:not(.title):not(.subtitle):not(.subtitle2):hover .cell {background:var(--hover);color:var(--fg);}
+    
+    /* Navigation */
+    #navigation .row.menu {display:flex; align-items:center; gap:15px; padding-bottom:10px; padding-top:10px;}
+    #navigation .row.menu .cell {border:none;}
+    #navigation .row.menu .cell:nth-child(3) {margin-left:auto;}
+    #navigation .active {font-weight:700 !important;text-decoration:underline;}
+    #navigation .grid {display:grid; grid-template-columns: max-content 1fr; column-gap: 12px; row-gap: 4px; align-items:center;}
+    #navigation .grid > .row.ranking{ display: contents;}
+    #navigation .cell {border:none; font-weight:normal;}
+    
+    /* Rangliste */
+    .table.ranking .cell.num {width:50px; text-align:center;}
+    .table.ranking .cell.team {flex:1; padding-left:5px;}
+    .table.ranking .cell.ref {width:10px; border:none; align-self:flex-start; font-size:11px;padding-left:5px;}
+    .table.ranking .row.title .cell.ref {background:none;}
+    .table.ranking .row.subtitle .cell.ref {background:none;}
+    .table.ranking .teammember {font-size:11px;}
+    .table.legend {padding-top:5px;}
+    .table.legend .cell {border:none;}
+    .table.legend .cell.refsymbol {width:20px; font-size:10px; display:inline; padding-left:5px;}
+    
+    /* Resultate */
+    .table.results .cell.plan {flex:1; padding-left:5px;}
+    .table.results .cell.teamname {flex:1; padding-left:5px;}
+    .table.results .cell.lsd {width:50px; text-align:center;}
+    .table.results .cell.score {width:30px; text-align:center;}
+    .table.results .cell.total {width:60px; text-align:center; font-weight:bold;}
+    .table.results .cell.rink {width:60px; text-align:center;}
+    .table.results .cell.pes {width:90px;; text-align:center; }
+    .total.resign {font-size:0.8em;}
+    
+    /* Paarungen */
+    .table.plan .cell.rink {width:60px; text-align:center;}
+    .table.plan .cell.team {flex:1; padding-left:5px;}
+    
+    /* Aktuelle Spiele */
+    .table.current .cell.plan {flex:1; padding-left:5px;}
+    .table.current .cell.teamname {flex:1; padding-left:5px;}
+    .table.current .cell.lsd {width:50px; text-align:center;}
+    .table.current .cell.score {width:30px; text-align:center;}
+    .table.current .cell.total {width:60px; text-align:center; font-weight:bold;}
+    /* Mannschaften */
+    .table.menu .cell {border:none; flex:1;}
+    .table.menu .row:hover .cell {background:none;}
+    .table.team .cell.team {flex:1; padding-left:5px;}
+    .table.team .cell.pos {width:50px; text-align:center;}
+    .table.team .cell.player {flex:1; padding-left:5px;}
+    .table.team .cell.mc {widtH:100px; text-align:center;}
+    .table.team .cell.plan {flex:1; padding-left:5px;}
+    .table.team .cell.teamname {flex:1; padding-left:5px;}
+    .table.team .cell.lsd {width:50px; text-align:center;}
+    .table.team .cell.score {width:30px; text-align:center;}
+    .table.team .cell.total {width:60px; text-align:center; font-weight:bold;}
+    .table.team .cell.rink {width:60px; text-align:center;}
+    .table.team .cell.pes {width:90px;; text-align:center; }
+    /* DSC-Rangliste */
+    .table.dsc .cell.team {flex:1; padding-left:5px;}
+    .table.dsc .cell.score {width:60px; text-align:center;}
+    .table.dsc .lsd.strike {color:red;}
+    .table.dsc .cell.total {width:60px; text-align:center; font-weight:700;}
+    
+    /* Fusszeile */
+    #footer {padding-top:var(--ptop);}
+    #footer .row {display:flex; justify-content:space-between; align-items:center;}
+    #footer .cell {flex: 0 1 auto; border:none; font-weight: 600;}
+    #footer .cell.footerright {text-align:right;}
+    
+    /* Responsive */
+    @media (max-width:800px) {
+      body {font-size:11px;}
+      .pagetitle {padding-top:4px; padding-bottom:4px; font-size:20px;}
+      .row.title .cell {height:25px;}
+      .section {font-size:15px; padding-top:12px; padding-bottom:5px;}
+      .row.subtitle .cell {height:20px;}
+      .row.subtitle2 .cell {height:20px;}
+      .table.ranking .teammember {display:none}
+      .table.ranking .cell.num {width:40px;}
+      .table.ranking .cell.ref {font-size:10px;}
+      .table.results .cell.lsd {display:none;}
+      .table.results .scorepes .cell.lsd {display:block; width:35px;}
+      .table.results .cell.score {width:15px;}
+      .table.results .cell.total {width:25px;}
+      .table.results .row.subtitle2 .cell.total {color:transparent;}
+      .table.results .cell.rink {display:none;}
+      .table.results .cell.pes {width:50px;}
+      .table.results .row.result .cell:nth-child(2) {border-left:1px solid var(--line);}
+      .table.result .cell.rink {width:40px;}
+      .table.current .cell.lsd {display:none;}
+      .table.current .cell.score {width:15px;}
+      .table.current .cell.total {width:25px;}
+      .table.current .row.subtitle2 .cell.total {color:transparent;}
+      .table.current .cell.rink {display:none;}
+      .table.current .cell.pes {width:80px;}
+      .table.current .row.result .cell:nth-child(2) {border-left:1px solid var(--line);}
+      .table.team .cell.pos {width:40px;}
+      .table.team .cell.mc {width:60px;}
+      .table.team .cell.lsd {display:none;}
+      .table.team .scorepes .cell.lsd {display:block; width:35px;}
+      .table.team .cell.score {width:15px;}
+      .table.team .cell.total {width:25px;}
+      .table.team .cell.pes {width:50px;}
+      .table.team .row.result.unplayed .cell.rink {width:40px;}
+      .table.team .row.result.unplayed .cell.pes {display:none;}
+      .table.team .row.result.played .cell.rink {display:none;}
+      .table.team .row.result.played {border-left: 1px solid var(--line);}
+      .table.plan .cell.rink {width:40px;}
+      .table.dsc .cell.score {width:40px;}
+      .table.dsc .cell.total {width:40px;}
+    }
+  </style>
+  <link rel="stylesheet" href="styles.css" >
+</head>
+<body>
+<div id="wrap">
+  <div id="topline">
+    <div id="topleft"></div>
+    <div id="topright"></div>
+  </div>
+  <div id="navigation"></div>
+<div class="pagetitle">SLO2026 Superliga Ostschweiz<br />St.Gallen, Uzwil und Weinfelden</div>
+<div id="pageinfo" data-pageid="ranking0" hidden></div>
+<div id="ranking">
+<div class="section">Gesamtrangliste</div>
+<div class="table ranking">
+  <div class="row title"><div class="cell num">Rang</div><div class="cell team">Mannschaft</div><div class="cell num">Punkte</div><div class="cell num">Ends</div><div class="cell num">Steine</div><div class="cell num">Pt. Dir.</div><div class="cell num">Spiele</div><div class="cell"></div></div>
+  <div class="row"><div class="cell num">1</div><div class="cell team"><div class="teamname"><a href="m.html#team3">Herisau-Waldstatt / Meuli</a></div><div class="teammember">Daniel Meuli (Skip); Ueli Styger; Martin Burtscher; Gisela Krapf; Barbara Keel; Flavio Feierabend; Damian Zellweger</div></div><div class="cell num">3</div><div class="cell num">6</div><div class="cell num">14</div><div class="cell num">0</div><div class="cell num">1</div><div class="cell"></div></div>
+  <div class="row"><div class="cell num">2</div><div class="cell team"><div class="teamname"><a href="m.html#team9">CC Thurgau / Höchner</a></div><div class="teammember">Michael Höchner (Skip); Markus Fässler; Samuel Furrer; Daniel Fröhli; Peter Hübner</div></div><div class="cell num">3</div><div class="cell num">5</div><div class="cell num">15</div><div class="cell num">0</div><div class="cell num">1</div><div class="cell"></div></div>
+  <div class="row"><div class="cell num">3</div><div class="cell team"><div class="teamname"><a href="m.html#team6">CC Uzwil / Bauer</a></div><div class="teammember">Beat Brunner (Skip); Andreas Bauer; Patricia Landolt; Roman Bauer</div></div><div class="cell num">3</div><div class="cell num">4</div><div class="cell num">10</div><div class="cell num">0</div><div class="cell num">1</div><div class="cell"></div></div>
+  <div class="row"><div class="cell num">4</div><div class="cell team"><div class="teamname"><a href="m.html#team7">Uzwil Selection / Bruggmann</a></div><div class="teammember">Rolf Bruggmann (Skip); Reto Schlegel; Fabian Bock; Benjamin Kuhn; Joel Bettschen</div></div><div class="cell num">3</div><div class="cell num">4</div><div class="cell num">7</div><div class="cell num">0</div><div class="cell num">1</div><div class="cell"></div></div>
+  <div class="row"><div class="cell num">5</div><div class="cell team"><div class="teamname"><a href="m.html#team2">SG Bär / Battilana</a></div><div class="teammember">Nick Vukovic; Pascal Sieber; Marco Battilana; Paul Battilana (Skip); Christoph Rusch; Philip Bosshart; Urs Weishaupt</div></div><div class="cell num">3</div><div class="cell num">2</div><div class="cell num">6</div><div class="cell num">0</div><div class="cell num">1</div><div class="cell"></div></div>
+  <div class="row"><div class="cell num">6</div><div class="cell team"><div class="teamname"><a href="m.html#team1">St.Galler Bär / Matt</a></div><div class="teammember">Rolf Matt (Skip); Jürg Stäheli; Carolina Abdel-Halim; Patrick Weiler; Thomas Allenspach; Tschösä Lutz; Stefan Zillig; Gabriel Ferguson</div></div><div class="cell num">0</div><div class="cell num">4</div><div class="cell num">5</div><div class="cell num">0</div><div class="cell num">1</div><div class="cell"></div></div>
+  <div class="row"><div class="cell num">7</div><div class="cell team"><div class="teamname"><a href="m.html#team10">Heidy's Curlingshop / Hegetschweiler</a></div><div class="teammember">Bianca Kämpf (Skip); Chantal Schmid; Claudia Hegetschweiler; Karin Weinmann; Louise Greiner; Nadja Grunder; Rebekka Richter; Valeska Gübeli</div></div><div class="cell num">0</div><div class="cell num">3</div><div class="cell num">7</div><div class="cell num">0</div><div class="cell num">1</div><div class="cell"></div></div>
+  <div class="row"><div class="cell num">8</div><div class="cell team"><div class="teamname"><a href="m.html#team5">Uzwil HeMü / Müller</a></div><div class="teammember">Jörg Müller (Skip); Ursi Hegner; Romano Ruch; Marco Ruch; Bea Kurzbauer; Armin Räbsamen; Martin Louis; Othmar Fritschi</div></div><div class="cell num">0</div><div class="cell num">3</div><div class="cell num">5</div><div class="cell num">0</div><div class="cell num">1</div><div class="cell"></div></div>
+  <div class="row"><div class="cell num"></div><div class="cell team"><div class="teamname"><a href="m.html#team8">ITConcepts / Junker</a></div><div class="teammember">Pascal Junker (Skip); Oliver Axnick; René Scheidegger; Nick Tobler; Christine Kobelt</div></div><div class="cell num">0</div><div class="cell num">3</div><div class="cell num">5</div><div class="cell num">0</div><div class="cell num">1</div><div class="cell"></div></div>
+  <div class="row"><div class="cell num">10</div><div class="cell team"><div class="teamname"><a href="m.html#team4">Saint Gallen / Schönenberger</a></div><div class="teammember">David Schönenberger (Skip); Fabio Resegatti; Simon Gerber; Martin Jörg; Sandra Bannwart; Dominic Lenz; Michael Gübeli; Piero Sabatini</div></div><div class="cell num">0</div><div class="cell num">2</div><div class="cell num">4</div><div class="cell num">0</div><div class="cell num">1</div><div class="cell"></div></div>
+</div>
+</div>
+<div id="results">
+<div class="section">Bisherige Resultate</div>
+<div class="table results">
+<div class="row subtitle"><div class="cell plan">St.Gallen, Mo. 19.10.2026, 20:15, , Runde 1</div></div>
+<div class="scoreebe"><div class="row subtitle2"><div class="cell teamname">Rink A</div><div class="cell score">T</div><div class="cell score">1</div><div class="cell score">2</div><div class="cell score">3</div><div class="cell score">4</div><div class="cell score">5</div><div class="cell score">6</div><div class="cell score">7</div><div class="cell score">8</div><div class="cell score">ZE</div><div class="cell total">Total</div></div><div class="row scoreplayed"><div class="cell teamname">St.Galler Bär / Matt*</div><div class="cell score">*</div><div class="cell score">0</div><div class="cell score">1</div><div class="cell score">1</div><div class="cell score">1</div><div class="cell score"> </div><div class="cell score">2</div><div class="cell score"> </div><div class="cell score">X</div><div class="cell score"> </div><div class="cell total">5</div></div><div class="row scoreplayed"><div class="cell teamname">SG Bär / Battilana</div><div class="cell score"></div><div class="cell score"> </div><div class="cell score"> </div><div class="cell score"> </div><div class="cell score"> </div><div class="cell score">3</div><div class="cell score"> </div><div class="cell score">3</div><div class="cell score">X</div><div class="cell score"> </div><div class="cell total">6</div></div></div><div class="scoreebe"><div class="row subtitle2"><div class="cell teamname">Rink B</div><div class="cell score">T</div><div class="cell score">1</div><div class="cell score">2</div><div class="cell score">3</div><div class="cell score">4</div><div class="cell score">5</div><div class="cell score">6</div><div class="cell score">7</div><div class="cell score">8</div><div class="cell score">ZE</div><div class="cell total">Total</div></div><div class="row scoreplayed"><div class="cell teamname">Herisau-Waldstatt / Meuli*</div><div class="cell score">*</div><div class="cell score">4</div><div class="cell score">2</div><div class="cell score">3</div><div class="cell score">1</div><div class="cell score"> </div><div class="cell score"> </div><div class="cell score">3</div><div class="cell score">1</div><div class="cell score"> </div><div class="cell total">14</div></div><div class="row scoreplayed"><div class="cell teamname">Saint Gallen / Schönenberger</div><div class="cell score"></div><div class="cell score"> </div><div class="cell score"> </div><div class="cell score"> </div><div class="cell score"> </div><div class="cell score">1</div><div class="cell score">3</div><div class="cell score"> </div><div class="cell score"> </div><div class="cell score"> </div><div class="cell total">4</div></div></div><div class="scoreebe"><div class="row subtitle2"><div class="cell teamname">Rink C</div><div class="cell score">T</div><div class="cell score">1</div><div class="cell score">2</div><div class="cell score">3</div><div class="cell score">4</div><div class="cell score">5</div><div class="cell score">6</div><div class="cell score">7</div><div class="cell score">8</div><div class="cell score">ZE</div><div class="cell total">Total</div></div><div class="row scoreplayed"><div class="cell teamname">Uzwil HeMü / Müller</div><div class="cell score"></div><div class="cell score"> </div><div class="cell score"> </div><div class="cell score">2</div><div class="cell score">2</div><div class="cell score"> </div><div class="cell score">1</div><div class="cell score"> </div><div class="cell score">X</div><div class="cell score"> </div><div class="cell total">5</div></div><div class="row scoreplayed"><div class="cell teamname">CC Uzwil / Bauer*</div><div class="cell score">*</div><div class="cell score">3</div><div class="cell score">4</div><div class="cell score"> </div><div class="cell score"> </div><div class="cell score">1</div><div class="cell score"> </div><div class="cell score">2</div><div class="cell score">X</div><div class="cell score"> </div><div class="cell total">10</div></div></div><div class="scoreebe"><div class="row subtitle2"><div class="cell teamname">Rink D</div><div class="cell score">T</div><div class="cell score">1</div><div class="cell score">2</div><div class="cell score">3</div><div class="cell score">4</div><div class="cell score">5</div><div class="cell score">6</div><div class="cell score">7</div><div class="cell score">8</div><div class="cell score">ZE</div><div class="cell total">Total</div></div><div class="row scoreplayed"><div class="cell teamname">Uzwil Selection / Bruggmann*</div><div class="cell score">*</div><div class="cell score">1</div><div class="cell score"> </div><div class="cell score"> </div><div class="cell score">2</div><div class="cell score">1</div><div class="cell score"> </div><div class="cell score">3</div><div class="cell score"> </div><div class="cell score"> </div><div class="cell total">7</div></div><div class="row scoreplayed"><div class="cell teamname">ITConcepts / Junker</div><div class="cell score"></div><div class="cell score"> </div><div class="cell score">2</div><div class="cell score">0</div><div class="cell score"> </div><div class="cell score"> </div><div class="cell score">1</div><div class="cell score"> </div><div class="cell score">2</div><div class="cell score"> </div><div class="cell total">5</div></div></div><div class="scoreebe"><div class="row subtitle2"><div class="cell teamname">Rink E</div><div class="cell score">T</div><div class="cell score">1</div><div class="cell score">2</div><div class="cell score">3</div><div class="cell score">4</div><div class="cell score">5</div><div class="cell score">6</div><div class="cell score">7</div><div class="cell score">8</div><div class="cell score">ZE</div><div class="cell total">Total</div></div><div class="row scoreplayed"><div class="cell teamname">CC Thurgau / Höchner*</div><div class="cell score">*</div><div class="cell score">3</div><div class="cell score">3</div><div class="cell score"> </div><div class="cell score">2</div><div class="cell score"> </div><div class="cell score"> </div><div class="cell score">3</div><div class="cell score">4</div><div class="cell score"> </div><div class="cell total">15</div></div><div class="row scoreplayed"><div class="cell teamname">Heidy's Curlingshop / Hegetschweiler</div><div class="cell score"></div><div class="cell score"> </div><div class="cell score"> </div><div class="cell score">1</div><div class="cell score"> </div><div class="cell score">4</div><div class="cell score">2</div><div class="cell score"> </div><div class="cell score"> </div><div class="cell score"> </div><div class="cell total">7</div></div></div>
+</div>
+</div>
+<div id="plan">
+<div class="section">Nächste Spiele</div>
+<div class="table plan">
+<div class="row subtitle"><div class="cell title">Uzwil, Mo. 26.10.2026, 18:00, , Runde 2</div></div>
+<div class="row pairing"><div class="cell rink">Rink D</div><div class="cell team">CC Uzwil / Bauer</div><div class="cell team">CC Thurgau / Höchner</div></div><div class="row pairing"><div class="cell rink">Rink C</div><div class="cell team">ITConcepts / Junker</div><div class="cell team">Heidy's Curlingshop / Hegetschweiler</div></div>
+<div class="row subtitle"><div class="cell title">Uzwil, Mo. 26.10.2026, 20:15, , Runde 2</div></div>
+<div class="row pairing"><div class="cell rink">Rink C</div><div class="cell team">St.Galler Bär / Matt</div><div class="cell team">Herisau-Waldstatt / Meuli</div></div><div class="row pairing"><div class="cell rink">Rink D</div><div class="cell team">SG Bär / Battilana</div><div class="cell team">Saint Gallen / Schönenberger</div></div><div class="row pairing"><div class="cell rink">Rink B</div><div class="cell team">Uzwil HeMü / Müller</div><div class="cell team">Uzwil Selection / Bruggmann</div></div>
+<div class="row subtitle"><div class="cell title">Weinfelden, Mo. 02.11.2026, 18:00, , Runde 3</div></div>
+<div class="row pairing"><div class="cell rink">Rink B</div><div class="cell team">St.Galler Bär / Matt</div><div class="cell team">Saint Gallen / Schönenberger</div></div><div class="row pairing"><div class="cell rink">Rink C</div><div class="cell team">SG Bär / Battilana</div><div class="cell team">Herisau-Waldstatt / Meuli</div></div>
+<div class="row subtitle"><div class="cell title">Weinfelden, Mo. 02.11.2026, 20:15, , Runde 3</div></div>
+<div class="row pairing"><div class="cell rink">Rink A</div><div class="cell team">Uzwil HeMü / Müller</div><div class="cell team">ITConcepts / Junker</div></div><div class="row pairing"><div class="cell rink">Rink B</div><div class="cell team">CC Uzwil / Bauer</div><div class="cell team">Heidy's Curlingshop / Hegetschweiler</div></div><div class="row pairing"><div class="cell rink">Rink C</div><div class="cell team">Uzwil Selection / Bruggmann</div><div class="cell team">CC Thurgau / Höchner</div></div>
+<div class="row subtitle"><div class="cell title">St.Gallen, Mo. 09.11.2026, 20:15, , Runde 4</div></div>
+<div class="row pairing"><div class="cell rink">Rink D</div><div class="cell team">St.Galler Bär / Matt</div><div class="cell team">Uzwil HeMü / Müller</div></div><div class="row pairing"><div class="cell rink">Rink E</div><div class="cell team">SG Bär / Battilana</div><div class="cell team">CC Uzwil / Bauer</div></div><div class="row pairing"><div class="cell rink">Rink A</div><div class="cell team">Herisau-Waldstatt / Meuli</div><div class="cell team">Uzwil Selection / Bruggmann</div></div><div class="row pairing"><div class="cell rink">Rink C</div><div class="cell team">Saint Gallen / Schönenberger</div><div class="cell team">Heidy's Curlingshop / Hegetschweiler</div></div><div class="row pairing"><div class="cell rink">Rink B</div><div class="cell team">ITConcepts / Junker</div><div class="cell team">CC Thurgau / Höchner</div></div>
+<div class="row subtitle"><div class="cell title">Uzwil, Mo. 16.11.2026, 18:00, , Runde 5</div></div>
+<div class="row pairing"><div class="cell rink">Rink D</div><div class="cell team">Herisau-Waldstatt / Meuli</div><div class="cell team">ITConcepts / Junker</div></div><div class="row pairing"><div class="cell rink">Rink C</div><div class="cell team">Saint Gallen / Schönenberger</div><div class="cell team">CC Thurgau / Höchner</div></div>
+<div class="row subtitle"><div class="cell title">Uzwil, Mo. 16.11.2026, 20:15, , Runde 5</div></div>
+<div class="row pairing"><div class="cell rink">Rink C</div><div class="cell team">St.Galler Bär / Matt</div><div class="cell team">CC Uzwil / Bauer</div></div><div class="row pairing"><div class="cell rink">Rink D</div><div class="cell team">SG Bär / Battilana</div><div class="cell team">Uzwil HeMü / Müller</div></div><div class="row pairing"><div class="cell rink">Rink B</div><div class="cell team">Uzwil Selection / Bruggmann</div><div class="cell team">Heidy's Curlingshop / Hegetschweiler</div></div>
+<div class="row subtitle"><div class="cell title">Weinfelden, Mo. 23.11.2026, 18:00, , Runde 6</div></div>
+<div class="row pairing"><div class="cell rink">Rink B</div><div class="cell team">St.Galler Bär / Matt</div><div class="cell team">Uzwil Selection / Bruggmann</div></div><div class="row pairing"><div class="cell rink">Rink C</div><div class="cell team">Uzwil HeMü / Müller</div><div class="cell team">Heidy's Curlingshop / Hegetschweiler</div></div>
+<div class="row subtitle"><div class="cell title">Weinfelden, Mo. 23.11.2026, 20:15, , Runde 6</div></div>
+<div class="row pairing"><div class="cell rink">Rink C</div><div class="cell team">SG Bär / Battilana</div><div class="cell team">ITConcepts / Junker</div></div><div class="row pairing"><div class="cell rink">Rink B</div><div class="cell team">Herisau-Waldstatt / Meuli</div><div class="cell team">CC Thurgau / Höchner</div></div><div class="row pairing"><div class="cell rink">Rink A</div><div class="cell team">Saint Gallen / Schönenberger</div><div class="cell team">CC Uzwil / Bauer</div></div>
+<div class="row subtitle"><div class="cell title">St.Gallen, Mo. 30.11.2026, 20:15, , Runde 7</div></div>
+<div class="row pairing"><div class="cell rink">Rink E</div><div class="cell team">St.Galler Bär / Matt</div><div class="cell team">ITConcepts / Junker</div></div><div class="row pairing"><div class="cell rink">Rink A</div><div class="cell team">SG Bär / Battilana</div><div class="cell team">CC Thurgau / Höchner</div></div><div class="row pairing"><div class="cell rink">Rink D</div><div class="cell team">Herisau-Waldstatt / Meuli</div><div class="cell team">Heidy's Curlingshop / Hegetschweiler</div></div><div class="row pairing"><div class="cell rink">Rink B</div><div class="cell team">Saint Gallen / Schönenberger</div><div class="cell team">Uzwil HeMü / Müller</div></div><div class="row pairing"><div class="cell rink">Rink C</div><div class="cell team">CC Uzwil / Bauer</div><div class="cell team">Uzwil Selection / Bruggmann</div></div>
+<div class="row subtitle"><div class="cell title">Uzwil, Mo. 07.12.2026, 18:00, , Runde 8</div></div>
+<div class="row pairing"><div class="cell rink">Rink D</div><div class="cell team">SG Bär / Battilana</div><div class="cell team">Heidy's Curlingshop / Hegetschweiler</div></div><div class="row pairing"><div class="cell rink">Rink B</div><div class="cell team">CC Uzwil / Bauer</div><div class="cell team">ITConcepts / Junker</div></div>
+<div class="row subtitle"><div class="cell title">Uzwil, Mo. 07.12.2026, 20:15, , Runde 8</div></div>
+<div class="row pairing"><div class="cell rink">Rink B</div><div class="cell team">St.Galler Bär / Matt</div><div class="cell team">CC Thurgau / Höchner</div></div><div class="row pairing"><div class="cell rink">Rink C</div><div class="cell team">Herisau-Waldstatt / Meuli</div><div class="cell team">Uzwil HeMü / Müller</div></div><div class="row pairing"><div class="cell rink">Rink D</div><div class="cell team">Saint Gallen / Schönenberger</div><div class="cell team">Uzwil Selection / Bruggmann</div></div>
+<div class="row subtitle"><div class="cell title">Weinfelden, Mo. 14.12.2026, 18:00, , Runde 9</div></div>
+<div class="row pairing"><div class="cell rink">Rink B</div><div class="cell team">Uzwil Selection / Bruggmann</div><div class="cell team">SG Bär / Battilana</div></div><div class="row pairing"><div class="cell rink">Rink C</div><div class="cell team">CC Thurgau / Höchner</div><div class="cell team">Uzwil HeMü / Müller</div></div>
+<div class="row subtitle"><div class="cell title">Weinfelden, Mo. 14.12.2026, 20:15, , Runde 9</div></div>
+<div class="row pairing"><div class="cell rink">Rink B</div><div class="cell team">Heidy's Curlingshop / Hegetschweiler</div><div class="cell team">St.Galler Bär / Matt</div></div><div class="row pairing"><div class="cell rink">Rink A</div><div class="cell team">CC Uzwil / Bauer</div><div class="cell team">Herisau-Waldstatt / Meuli</div></div><div class="row pairing"><div class="cell rink">Rink C</div><div class="cell team">ITConcepts / Junker</div><div class="cell team">Saint Gallen / Schönenberger</div></div>
+</div>
+</div>
+<div id="footer">
+  <div class="row">
+    <div class="cell footerleft">Spielstand vom: 19.10.2026 / 22:22:47</div>
+    <div class="cell footerright"><a href="https://rinkmaster.ch" target="_blank">Rinkmaster 14.6.14, lizenziert für Curling Center St. Gallen</a></div>
+  </div>
+</div>
+</div>
+<script>
+  var nav = document.getElementById('navigation');
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if(this.readyState == 4 && this.status == 200) {
+      nav.innerHTML = this.responseText;
+      let el = document.getElementById('pageinfo');
+      let pageid = el ? el.dataset.pageid : '';
+      if(pageid) el = document.getElementById(pageid);
+      if(el) el.classList.add('active');
+    }
+  }
+  xhttp.open("GET", 'nav.html', true);
+  try {
+    xhttp.overrideMimeType('text/html; charset=UTF-8');
+  } finally {}
+  xhttp.setRequestHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  xhttp.send();
+</script>
+</body>
+</html>
+
