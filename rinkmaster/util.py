@@ -1,6 +1,8 @@
 """Kleine Parser-Helfer."""
 from __future__ import annotations
 
+import re
+
 
 def int_or_none(text: str | None) -> int | None:
     """Wandelt reinen Zifferntext in int; alles andere (leer, '–', 'X') -> None."""
@@ -8,3 +10,20 @@ def int_or_none(text: str | None) -> int | None:
     if s.lstrip("-").isdigit():
         return int(s)
     return None
+
+
+def parse_meta(text: str) -> tuple[str | None, str | None, str | None, int | None]:
+    """Zerlegt eine Rinkmaster-Kopfzeile wie
+    ``"St.Gallen, Mo. 19.10.2026, 20:15, , Runde 1"`` in
+    ``(venue, date 'dd.mm.yyyy', time 'HH:MM', round)``."""
+    parts = [p.strip() for p in text.split(",")]
+    venue = parts[0] if parts and parts[0] else None
+    date_m = re.search(r"(\d{2}\.\d{2}\.\d{4})", text)
+    time_m = re.search(r"(\d{1,2}:\d{2})", text)
+    round_m = re.search(r"Runde\s+(\d+)", text)
+    return (
+        venue,
+        date_m.group(1) if date_m else None,
+        time_m.group(1) if time_m else None,
+        int(round_m.group(1)) if round_m else None,
+    )
