@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SLO2026 Superliga Ostschweiz - Aktuelle Spiele</title>
+  <meta name="description" content="Rinkmaster">
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <meta http-equiv="refresh" content="60" >
+  <style>
+    /* Basiseinstellungen */
+    :root {
+      --line: #d0d7de;
+      --link: #0000C0;
+      --brand-rgb: 0,255,64;
+      --brand: rgba(var(--brand-rgb), 1);
+      --brand-bright: rgba(var(--brand-rgb), 0.7);
+      --brand-brighter: rgba(var(--brand-rgb), 0.2);
+      --brand-fg: rgb(0,0,0);
+      --fg: #111;
+      --maxw:1000px;
+      --ptop:15px;
+      --hover:#efefef;
+    }
+    
+    body {margin:0; font:14px/1.45 systemui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; color:var(--fg);}
+    #wrap{max-width:var(--maxw); margin:0 auto; padding:0 12px 16px;}
+    a, a:visited {color:var(--link); text-decoration:none;}
+    a:hover {text-decoration:underline;}
+    hr {margin-top:15px; margin-bottom:15px; border:none; border-top: 5px ridge var(--line); border-radius: 6px;}
+    
+    .pagetitle {max-width:var(--maxw); margin:12px auto 8px; padding:8px 12px; text-align:center;font-weight:700; font-size:22px; background:var(--brand); color:var(--brand-fg); border: 1px solid var(--line); border-radius:10px;}
+    .section {padding-top:20px; padding-bottom:10px; font-weight:700; font-size:18px;}
+    
+    /* Generische Flexbox-Settings */
+    .row {display:flex;}
+    .cell {border-right:1px solid var(--line); border-top:1px solid var(--line); align-content:center;}
+    .cell:first-child {border-left:1px solid var(--line);}
+    .row:last-child .cell {border-bottom:1px solid var(--line);}
+    .row.title .cell {background: var(--brand); color:var(--brand-fg); height:30px; font-weight:700;}
+    .row.subtitle .cell {background:var(--brand-bright); color:var(--brand-fg); height:25px; font-weight:700;}
+    .row.subtitle .cell.title {flex:1; padding-left:5px;height:max-content;}
+    .row.subtitle2 .cell {background:var(--brand-brighter); color:var(--fg); height:25px; font-weight:700;}
+    .row.subtitle2 .cell.title {flex:1; padding-left:5px;}
+    .row:not(.title):not(.subtitle):not(.subtitle2):hover .cell {background:var(--hover);color:var(--fg);}
+    
+    /* Navigation */
+    #navigation .row.menu {display:flex; align-items:center; gap:15px; padding-bottom:10px; padding-top:10px;}
+    #navigation .row.menu .cell {border:none;}
+    #navigation .row.menu .cell:nth-child(3) {margin-left:auto;}
+    #navigation .active {font-weight:700 !important;text-decoration:underline;}
+    #navigation .grid {display:grid; grid-template-columns: max-content 1fr; column-gap: 12px; row-gap: 4px; align-items:center;}
+    #navigation .grid > .row.ranking{ display: contents;}
+    #navigation .cell {border:none; font-weight:normal;}
+    
+    /* Rangliste */
+    .table.ranking .cell.num {width:50px; text-align:center;}
+    .table.ranking .cell.team {flex:1; padding-left:5px;}
+    .table.ranking .cell.ref {width:10px; border:none; align-self:flex-start; font-size:11px;padding-left:5px;}
+    .table.ranking .row.title .cell.ref {background:none;}
+    .table.ranking .row.subtitle .cell.ref {background:none;}
+    .table.ranking .teammember {font-size:11px;}
+    .table.legend {padding-top:5px;}
+    .table.legend .cell {border:none;}
+    .table.legend .cell.refsymbol {width:20px; font-size:10px; display:inline; padding-left:5px;}
+    
+    /* Resultate */
+    .table.results .cell.plan {flex:1; padding-left:5px;}
+    .table.results .cell.teamname {flex:1; padding-left:5px;}
+    .table.results .cell.lsd {width:50px; text-align:center;}
+    .table.results .cell.score {width:30px; text-align:center;}
+    .table.results .cell.total {width:60px; text-align:center; font-weight:bold;}
+    .table.results .cell.rink {width:60px; text-align:center;}
+    .table.results .cell.pes {width:90px;; text-align:center; }
+    .total.resign {font-size:0.8em;}
+    
+    /* Paarungen */
+    .table.plan .cell.rink {width:60px; text-align:center;}
+    .table.plan .cell.team {flex:1; padding-left:5px;}
+    
+    /* Aktuelle Spiele */
+    .table.current .cell.plan {flex:1; padding-left:5px;}
+    .table.current .cell.teamname {flex:1; padding-left:5px;}
+    .table.current .cell.lsd {width:50px; text-align:center;}
+    .table.current .cell.score {width:30px; text-align:center;}
+    .table.current .cell.total {width:60px; text-align:center; font-weight:bold;}
+    /* Mannschaften */
+    .table.menu .cell {border:none; flex:1;}
+    .table.menu .row:hover .cell {background:none;}
+    .table.team .cell.team {flex:1; padding-left:5px;}
+    .table.team .cell.pos {width:50px; text-align:center;}
+    .table.team .cell.player {flex:1; padding-left:5px;}
+    .table.team .cell.mc {widtH:100px; text-align:center;}
+    .table.team .cell.plan {flex:1; padding-left:5px;}
+    .table.team .cell.teamname {flex:1; padding-left:5px;}
+    .table.team .cell.lsd {width:50px; text-align:center;}
+    .table.team .cell.score {width:30px; text-align:center;}
+    .table.team .cell.total {width:60px; text-align:center; font-weight:bold;}
+    .table.team .cell.rink {width:60px; text-align:center;}
+    .table.team .cell.pes {width:90px;; text-align:center; }
+    /* DSC-Rangliste */
+    .table.dsc .cell.team {flex:1; padding-left:5px;}
+    .table.dsc .cell.score {width:60px; text-align:center;}
+    .table.dsc .lsd.strike {color:red;}
+    .table.dsc .cell.total {width:60px; text-align:center; font-weight:700;}
+    
+    /* Fusszeile */
+    #footer {padding-top:var(--ptop);}
+    #footer .row {display:flex; justify-content:space-between; align-items:center;}
+    #footer .cell {flex: 0 1 auto; border:none; font-weight: 600;}
+    #footer .cell.footerright {text-align:right;}
+    
+    /* Responsive */
+    @media (max-width:800px) {
+      body {font-size:11px;}
+      .pagetitle {padding-top:4px; padding-bottom:4px; font-size:20px;}
+      .row.title .cell {height:25px;}
+      .section {font-size:15px; padding-top:12px; padding-bottom:5px;}
+      .row.subtitle .cell {height:20px;}
+      .row.subtitle2 .cell {height:20px;}
+      .table.ranking .teammember {display:none}
+      .table.ranking .cell.num {width:40px;}
+      .table.ranking .cell.ref {font-size:10px;}
+      .table.results .cell.lsd {display:none;}
+      .table.results .scorepes .cell.lsd {display:block; width:35px;}
+      .table.results .cell.score {width:15px;}
+      .table.results .cell.total {width:25px;}
+      .table.results .row.subtitle2 .cell.total {color:transparent;}
+      .table.results .cell.rink {display:none;}
+      .table.results .cell.pes {width:50px;}
+      .table.results .row.result .cell:nth-child(2) {border-left:1px solid var(--line);}
+      .table.result .cell.rink {width:40px;}
+      .table.current .cell.lsd {display:none;}
+      .table.current .cell.score {width:15px;}
+      .table.current .cell.total {width:25px;}
+      .table.current .row.subtitle2 .cell.total {color:transparent;}
+      .table.current .cell.rink {display:none;}
+      .table.current .cell.pes {width:80px;}
+      .table.current .row.result .cell:nth-child(2) {border-left:1px solid var(--line);}
+      .table.team .cell.pos {width:40px;}
+      .table.team .cell.mc {width:60px;}
+      .table.team .cell.lsd {display:none;}
+      .table.team .scorepes .cell.lsd {display:block; width:35px;}
+      .table.team .cell.score {width:15px;}
+      .table.team .cell.total {width:25px;}
+      .table.team .cell.pes {width:50px;}
+      .table.team .row.result.unplayed .cell.rink {width:40px;}
+      .table.team .row.result.unplayed .cell.pes {display:none;}
+      .table.team .row.result.played .cell.rink {display:none;}
+      .table.team .row.result.played {border-left: 1px solid var(--line);}
+      .table.plan .cell.rink {width:40px;}
+      .table.dsc .cell.score {width:40px;}
+      .table.dsc .cell.total {width:40px;}
+    }
+  </style>
+  <link rel="stylesheet" href="styles.css" >
+</head>
+<body>
+<div id="wrap">
+  <div id="topline">
+    <div id="topleft"></div>
+    <div id="topright"></div>
+  </div>
+  <div id="navigation"></div>
+<div class="pagetitle">SLO2026 Superliga Ostschweiz<br />St.Gallen, Uzwil und Weinfelden</div>
+<div id="pageinfo" data-pageid="current" hidden></div>
+<div id="current">
+<div class="section">Aktuelle Spiele</div>
+<div class="table current">
+<div class="comment">Zur Zeit liegen keine aktuellen Resultate vor.</div>
+</div>
+</div>
+<div id="footer">
+  <div class="row">
+    <div class="cell footerleft">Spielstand vom: 19.10.2026 / 22:22:47</div>
+    <div class="cell footerright"><a href="https://rinkmaster.ch" target="_blank">Rinkmaster 14.6.14, lizenziert für Curling Center St. Gallen</a></div>
+  </div>
+</div>
+</div>
+<script>
+  var nav = document.getElementById('navigation');
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if(this.readyState == 4 && this.status == 200) {
+      nav.innerHTML = this.responseText;
+      let el = document.getElementById('pageinfo');
+      let pageid = el ? el.dataset.pageid : '';
+      if(pageid) el = document.getElementById(pageid);
+      if(el) el.classList.add('active');
+    }
+  }
+  xhttp.open("GET", 'nav.html', true);
+  try {
+    xhttp.overrideMimeType('text/html; charset=UTF-8');
+  } finally {}
+  xhttp.setRequestHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  xhttp.send();
+</script>
+</body>
+</html>
+

@@ -12,6 +12,23 @@ def int_or_none(text: str | None) -> int | None:
     return None
 
 
+def to_iso_date(date: str | None) -> str | None:
+    """'19.10.2026' -> '2026-10-19'; None/unparsbar -> None (E2).
+
+    Anders als ``numbering._date_iso`` (das zum Sortieren einen Sentinel
+    liefert) gibt diese Funktion bei fehlendem/kaputtem Datum ``None`` zurück.
+    """
+    if not date:
+        return None
+    try:
+        dd, mm, yyyy = date.split(".")
+    except ValueError:
+        return None
+    if not (dd.isdigit() and mm.isdigit() and yyyy.isdigit()):
+        return None
+    return f"{yyyy}-{mm}-{dd}"
+
+
 def parse_meta(text: str) -> tuple[str | None, str | None, str | None, int | None]:
     """Zerlegt eine Rinkmaster-Kopfzeile wie
     ``"St.Gallen, Mo. 19.10.2026, 20:15, , Runde 1"`` in

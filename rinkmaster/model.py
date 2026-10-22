@@ -38,7 +38,8 @@ class GameTeam:
 class Game:
     number: int | None = None
     round: int | None = None
-    date: str | None = None
+    date: str | None = None       # Anzeige-Datum 'dd.mm.yyyy'
+    date_iso: str | None = None   # abgeleitet 'yyyy-mm-dd' (E2), null wenn unparsbar
     time: str | None = None
     venue: str | None = None
     rink: str | None = None
@@ -71,6 +72,7 @@ class Ranking:
 class Tournament:
     id: str
     name: str
+    schema: int = 1               # JSON-Schema-Version (E5); in to_json vorangestellt
     season: str | None = None
     last_update: str | None = None
     live: bool = False
@@ -80,5 +82,11 @@ class Tournament:
 
 
 def to_json(tournament: Tournament) -> str:
-    """Serialisiert ein Tournament als UTF-8-JSON (Umlaute bleiben erhalten)."""
-    return json.dumps(asdict(tournament), ensure_ascii=False, indent=2)
+    """Serialisiert ein Tournament als UTF-8-JSON (Umlaute bleiben erhalten).
+
+    ``schema`` wird als erster Schlüssel ausgegeben, damit ein Konsument die
+    Version vor allem anderen lesen kann.
+    """
+    d = asdict(tournament)
+    ordered = {"schema": d.pop("schema"), **d}
+    return json.dumps(ordered, ensure_ascii=False, indent=2)

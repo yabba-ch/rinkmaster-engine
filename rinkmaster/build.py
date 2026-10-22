@@ -3,17 +3,46 @@ from __future__ import annotations
 
 import re
 
-from rinkmaster.model import Tournament, to_json
-from rinkmaster.numbering import assign_numbers
+from rinkmaster.model import Game, Tournament, to_json
+from rinkmaster.numbering import assign_numbers, game_key
+from rinkmaster.parse_live import parse_live
 from rinkmaster.parse_plan import parse_plan
 from rinkmaster.parse_ranking import parse_ranking
 from rinkmaster.parse_results import parse_results
+from rinkmaster.util import to_iso_date
+
+STONE_COLORS = ("yellow", "red")   # positional: teams[0]=Gelb, teams[1]=Rot (E1)
+_STATUS_PRECEDENCE = {"next": 1, "live": 2, "final": 3}   # final > live > next
 from rinkmaster.parse_teams import parse_teams
 
 
 def _parse_last_update(index_html: str) -> str | None:
     m = re.search(r"Spielstand vom:\s*([\d.]+\s*/\s*[\d:]+)", index_html)
     return m.group(1).strip() if m else None
+
+
+def _normalize_games(games: list[Game]) -> list[Game]:
+    """Setzt site-neutrale Ableitungen: Steinfarbe positional (E1) und
+    ISO-Datum (E2). Vorhandene Steinfarben werden nicht überschrieben."""
+    for game in games:
+        game.date_iso = to_iso_date(game.date)
+        for i, team in enumerate(game.teams):
+            if i < len(STONE_COLORS) and team.stone_color is None:
+                team.stone_color = STONE_COLORS[i]
+    return games
+
+
+def _dedupe(games: list[Game]) -> list[Game]:
+    """Ein Spiel kann im Plan (next), in a.html (live) und in den Resultaten
+    (final) auftauchen. Je ``game_key`` bleibt der Eintrag mit der höchsten
+    Präzedenz (final > live > next)."""
+    best: dict[str, Game] = {}
+    for game in games:
+        key = game_key(game)
+        current = best.get(key)
+        if current is None or _STATUS_PRECEDENCE[game.status] > _STATUS_PRECEDENCE[current.status]:
+            best[key] = game
+    return list(best.values())
 
 
 def build_tournament(pages: dict[str, str | None], discovery: dict, meta: dict) -> Tournament:
@@ -44,11 +73,17 @@ def build_tournament(pages: dict[str, str | None], discovery: dict, meta: dict) 
                 team.ends = row.ends
                 team.stones = row.stones
 
-    games = []
+    raw_games: list[Game] = []
     last_update = None
     if index_html:
-        games = assign_numbers(parse_results(index_html) + parse_plan(index_html))
+        raw_games += parse_results(index_html) + parse_plan(index_html)
         last_update = _parse_last_update(index_html)
+
+    current_page = discovery.get("current_page")
+    if current_page and pages.get(current_page):
+        raw_games += parse_live(pages[current_page])
+
+    games = _normalize_games(assign_numbers(_dedupe(raw_games))) if raw_games else []
 
     return Tournament(
         id=meta["id"],

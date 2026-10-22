@@ -15,3 +15,10 @@ def test_to_json_preserves_umlauts_and_shape():
     d = json.loads(s)
     assert d["teams"][0]["players"][0]["is_skip"] is True
     assert d["teams"][0]["rank"] == 2
+
+
+def test_schema_defaults_to_one_and_is_first_key():
+    import json
+    d = json.loads(to_json(Tournament(id="slo", name="SLO")))
+    assert list(d.keys())[0] == "schema"
+    assert d["schema"] == 1
