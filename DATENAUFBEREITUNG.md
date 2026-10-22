@@ -28,7 +28,8 @@ Top-Level-Objekt **`Tournament`**:
   "id": "slo",
   "name": "Superliga Ostschweiz",
   "season": "2026/27",            // optional
-  "last_update": "22.10.2026 / 20:14",  // Rohtext aus "Spielstand vom:", kann null sein
+  "last_update": "22.10.2026 / 20:14",       // Rohtext aus "Spielstand vom:", kann null sein
+  "last_update_iso": "2026-10-22T20:14:00",  // ISO, naive lokal (E4), kann null sein
   "live": false,                  // true, wenn Live-Lauf
   "teams":    [ Team, … ],
   "rankings": [ Ranking, … ],     // rankings[0] = Hauptrangliste
@@ -91,7 +92,7 @@ Top-Level-Objekt **`Tournament`**:
 
 ## 3. Entscheidungen (Soll — in der Engine umzusetzen)
 
-Diese Punkte fehlen oder sind unvollständig und sind für den Site-Konsum nötig. **Stand 2026-10-22: E1, E2, E3, E5 umgesetzt; E4 offen.**
+Diese Punkte fehlen oder sind unvollständig und sind für den Site-Konsum nötig. **Stand 2026-10-22: E1–E5 alle umgesetzt.**
 
 **E1 — `stone_color` befüllen. ✓ erledigt 2026-10-22.** Positional in `build._normalize_games`: `teams[0]="yellow"`, `teams[1]="red"` (bereits gesetzte Werte werden nicht überschrieben). Renderer mappt auf `stein--gelb/--rot`.
 
@@ -101,7 +102,7 @@ Diese Punkte fehlen oder sind unvollständig und sind für den Site-Konsum nöti
   - **`current_end` ist abgeleitet** (`_current_end`): höchste End-Nummer mit einem Wert, mindestens 1. Grund: das reale (derzeit spiellose) a.html enthält keinen expliziten Marker. Taucht in einem echten Live-Stand ein Marker auf, kann `_current_end` darauf umgestellt werden — das ist der einzige noch unverifizierte Teil.
   - Leerer Stand (`<div class="table current"><div class="comment">…keine aktuellen Resultate…</div></div>`) → keine Live-Spiele.
 
-**E4 — `last_update_iso` ergänzen.** Zusätzlich zum Rohtext `last_update` ein ISO-Zeitstempel (`"2026-10-22T20:14:00+02:00"`) für das Live-Widget („Spielstand vom …", Alters-Check). *Priorität: mittel.*
+**E4 — `last_update_iso` ergänzen. ✓ erledigt 2026-10-22.** `util.to_iso_datetime` leitet aus `last_update` einen ISO-Zeitstempel ab — **naive lokale Zeit ohne Offset** (`"2026-10-19T22:22:47"`), bewusst ohne Zeitzonen-Abhängigkeit, da Site und Daten Schweizer Zeit sind. Fürs Live-Widget („Spielstand vom …", Alters-Check).
 
 **E5 — `schema`-Version voranstellen. ✓ erledigt 2026-10-22.** Top-Level `"schema": 1`, in `to_json` immer als erster Schlüssel ausgegeben. Das Live-Widget kann so bei einem Schemabruch sauber auf den Fallback gehen.
 

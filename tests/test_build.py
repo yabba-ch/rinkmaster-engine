@@ -28,6 +28,7 @@ def test_build_from_fixtures_assembles_full_json():
     assert any(g["status"] == "final" for g in d["games"])
     assert any(g["status"] == "next" for g in d["games"])
     assert d["last_update"] == "19.10.2026 / 22:22:47"
+    assert d["last_update_iso"] == "2026-10-19T22:22:47"      # E4
 
 
 def test_teams_enriched_from_primary_ranking():

@@ -74,7 +74,8 @@ class Tournament:
     name: str
     schema: int = 1               # JSON-Schema-Version (E5); in to_json vorangestellt
     season: str | None = None
-    last_update: str | None = None
+    last_update: str | None = None       # Rohtext 'dd.mm.yyyy / HH:MM:SS'
+    last_update_iso: str | None = None   # abgeleitet 'yyyy-mm-ddTHH:MM:SS' (E4)
     live: bool = False
     teams: list[Team] = field(default_factory=list)
     rankings: list[Ranking] = field(default_factory=list)

@@ -9,7 +9,7 @@ from rinkmaster.parse_live import parse_live
 from rinkmaster.parse_plan import parse_plan
 from rinkmaster.parse_ranking import parse_ranking
 from rinkmaster.parse_results import parse_results
-from rinkmaster.util import to_iso_date
+from rinkmaster.util import to_iso_date, to_iso_datetime
 
 STONE_COLORS = ("yellow", "red")   # positional: teams[0]=Gelb, teams[1]=Rot (E1)
 _STATUS_PRECEDENCE = {"next": 1, "live": 2, "final": 3}   # final > live > next
@@ -90,6 +90,7 @@ def build_tournament(pages: dict[str, str | None], discovery: dict, meta: dict) 
         name=meta["name"],
         season=meta.get("season"),
         last_update=last_update,
+        last_update_iso=to_iso_datetime(last_update),
         live=meta.get("live", False),
         teams=teams,
         rankings=rankings,
