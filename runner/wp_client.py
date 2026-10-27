@@ -10,12 +10,12 @@ from datetime import datetime
 def auth_from_env():
     """Authorization-Header aus der Umgebung: WP_AUTH direkt, sonst Basic aus WP_USER/WP_APP_PASSWORD."""
     direct = os.environ.get("WP_AUTH")
-    if direct:
-        return direct
+    if direct and direct.strip():
+        return direct.strip()
     user = os.environ.get("WP_USER")
     pw = os.environ.get("WP_APP_PASSWORD")
     if user and pw:
-        token = base64.b64encode(("%s:%s" % (user, pw)).encode("utf-8")).decode("ascii")
+        token = base64.b64encode(("%s:%s" % (user.strip(), pw.strip())).encode("utf-8")).decode("ascii")
         return "Basic " + token
     return None
 

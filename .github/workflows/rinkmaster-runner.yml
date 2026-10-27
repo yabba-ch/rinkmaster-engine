@@ -25,5 +25,6 @@ jobs:
         run: python -m runner
         env:
           WP_BASE: ${{ secrets.WP_BASE }}
+          WP_AUTH: ${{ secrets.WP_AUTH }}
           WP_USER: ${{ secrets.WP_USER }}
           WP_APP_PASSWORD: ${{ secrets.WP_APP_PASSWORD }}
