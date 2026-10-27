@@ -1,0 +1,29 @@
+name: Rinkmaster Cloud-Runner
+
+on:
+  schedule:
+    # Basistakt alle 5 Minuten; welche Events wirklich neu geparst werden,
+    # steuert das globale Admin-Intervall (5/10/15/20/60) ueber events_to_refresh.
+    - cron: '*/5 * * * *'
+  workflow_dispatch:            # manueller Trigger (entspricht "Jetzt aktualisieren")
+
+concurrency:
+  group: rinkmaster-runner      # keine ueberlappenden Laeufe
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Abhaengigkeiten
+        run: pip install -r requirements.txt
+      - name: Runner ausfuehren
+        run: python -m runner
+        env:
+          WP_BASE: ${{ secrets.WP_BASE }}
+          WP_USER: ${{ secrets.WP_USER }}
+          WP_APP_PASSWORD: ${{ secrets.WP_APP_PASSWORD }}
