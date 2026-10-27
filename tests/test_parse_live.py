@@ -19,4 +19,4 @@ def test_parse_live_parses_running_game():
     assert g.hammer_team == "St.Galler Bär / Matt"          # '*' am Namen/T-Spalte
     assert g.teams[0].ends[:5] == [0, 1, 1, 1, None]         # Ends 1–4 gespielt, 5 offen
     assert g.teams[0].total == 3
-    assert g.current_end == 4                                # höchstes End mit Wert
+    assert g.current_end == 5                                # höchstes End mit Wert + 1 = laufendes End

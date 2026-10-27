@@ -67,6 +67,6 @@ def test_live_game_from_current_page_is_merged():
     d = json.loads(to_json(t))
     live = [g for g in d["games"] if g["status"] == "live"]
     assert len(live) == 1
-    assert live[0]["current_end"] == 4            # E3
+    assert live[0]["current_end"] == 5            # E3: letztes End mit Wert + 1
     assert live[0]["teams"][0]["stone_color"] == "yellow"   # Normalisierung greift auch live
     assert live[0]["date_iso"] == "2026-10-26"

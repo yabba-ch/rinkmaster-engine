@@ -1,13 +1,12 @@
 """Parser für laufende Spiele (``a.html``, Container ``.table.current``).
 
-``a.html`` (nav ``#current`` → «Aktuelle Spiele») nutzt dieselben ``.scoreebe``-
-Blöcke wie die Resultate, nur im Container ``.table.current`` und mit noch
-unvollständigem Score. Darum wird ``parse_results.parse_scoreebe`` wiederverwendet.
+``a.html`` (nav ``#current`` → «Aktuelle Spiele») verwendet ``.result``-Blöcke
+(nicht ``.scoreebe`` wie die Resultate) mit identischer innerer Struktur.
+Darum wird ``parse_results.parse_scoreebe`` wiederverwendet.
 
-``current_end`` wird aus den Enddaten **abgeleitet** (höchstes End mit einem
-Wert) — Rinkmaster liefert für a.html keinen expliziten Marker. Taucht später
-ein echter Marker in einem Live-Stand auf, kann ``_current_end`` darauf
-umgestellt werden.
+``current_end`` wird abgeleitet: höchstes End mit einem Wert + 1 = das derzeit
+gespielte End. Rinkmaster liefert keinen expliziten Marker. Mindestens 1,
+maximal 9 (ZE).
 """
 from __future__ import annotations
 
@@ -19,14 +18,16 @@ from rinkmaster.util import parse_meta
 
 
 def _current_end(teams: list[GameTeam]) -> int:
-    """Höchste End-Nummer (1-basiert), für die irgendein Team einen Wert hat;
-    mindestens 1 (End 1 im Gange)."""
+    """Laufendes End (1-basiert): höchste End-Nummer mit einem Wert + 1.
+    Mindestens 1 (kein End gespielt), maximal 9 (Zusatzend)."""
     last = 0
     for team in teams:
         for i, value in enumerate(team.ends, start=1):
             if value is not None:
                 last = max(last, i)
-    return last or 1
+    if last == 0:
+        return 1
+    return min(last + 1, 9)
 
 
 def parse_live(a_html: str) -> list[Game]:
@@ -42,12 +43,15 @@ def parse_live(a_html: str) -> list[Game]:
     for child in container.find_all("div", recursive=False):
         classes = child.get("class", [])
         if "row" in classes and "subtitle" in classes:
-            plan = child.select_one(".cell.plan")
+            # a.html uses .cell.title; older/offline fixtures may use .cell.plan
+            plan = child.select_one(".cell.plan, .cell.title")
             if plan:
                 venue, date, time, rnd = parse_meta(plan.get_text(strip=True))
-        elif "scoreebe" in classes:
+        elif "result" in classes:
+            # a.html uses .result; strip " - Spiel läuft" suffix Rinkmaster appends
             rink_cell = child.select_one(".row.subtitle2 .cell.teamname")
-            rink = rink_cell.get_text(strip=True) if rink_cell else None
+            rink_text = rink_cell.get_text(strip=True) if rink_cell else None
+            rink = rink_text.split(" - ")[0].strip() if rink_text else None
             teams, hammer = parse_scoreebe(child)
             games.append(Game(
                 round=rnd, date=date, time=time, venue=venue, rink=rink,
