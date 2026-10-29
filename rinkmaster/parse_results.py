@@ -22,13 +22,18 @@ def parse_scoreebe(scoreebe: Tag) -> tuple[list[GameTeam], str | None]:
         if "subtitle2" in classes:
             continue
         cells = row.find_all("div", class_="cell", recursive=False)
-        if len(cells) < 12:
+        if len(cells) < 4:      # mind. Name + Hammer + 1 End + Total
             continue
         name_raw = cells[0].get_text(strip=True)
         has_hammer = name_raw.endswith("*") or "*" in cells[1].get_text(strip=True)
         name = name_raw.rstrip("*").strip()
-        ends = [int_or_none(c.get_text()) for c in cells[2:11]]  # e1..e8 + ZE
-        total = int_or_none(cells[11].get_text(strip=True))
+        # Ends = alle Zellen zwischen Hammer-Spalte und Total. Die Spaltenzahl
+        # variiert je Turnier: mit Zusatzend (12 Zellen) oder ohne (11 Zellen,
+        # z.B. SG Hallen-Meisterschaft). Auf Laenge 9 normalisieren (Ends 1-8 +
+        # ZE), damit der JSON-Vertrag (immer 9) und der Renderer stimmen.
+        ends = [int_or_none(c.get_text()) for c in cells[2:-1]]
+        ends = (ends + [None] * 9)[:9]
+        total = int_or_none(cells[-1].get_text(strip=True))
         teams.append(GameTeam(name=name, total=total, ends=ends))
         if has_hammer:
             hammer = name
