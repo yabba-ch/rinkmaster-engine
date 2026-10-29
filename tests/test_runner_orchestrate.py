@@ -89,3 +89,19 @@ def test_engine_error_isolated():
     result = run_once(wp, eng, push, NOW)
     assert [p["id"] for p in push.pushes] == ["b"]
     assert "b" in result and "a" not in result
+
+
+class EmptyEngine:
+    """Liefert valides, aber leeres JSON (wie die Engine bei blockiertem Fetch)."""
+
+    def build(self, url, id, name, season, live):
+        return {"schema": 1, "id": id, "name": name, "teams": [], "rankings": [], "games": []}
+
+
+def test_empty_data_not_pushed():
+    # Leere Daten duerfen den guten Stand NICHT ueberschreiben (Clobber-Schutz).
+    wp = FakeWP([_ev("a")])
+    push = FakePusher()
+    result = run_once(wp, EmptyEngine(), push, NOW)
+    assert push.pushes == []
+    assert "a" not in result

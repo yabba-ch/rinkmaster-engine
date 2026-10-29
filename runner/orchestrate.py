@@ -4,6 +4,17 @@ import sys
 from runner.selection import events_to_refresh
 
 
+def _is_degenerate(data):
+    """True, wenn die Engine leere/entartete Daten liefert (0 Teams/Spiele/Ranglisten).
+
+    Zweite Verteidigungslinie zum Fail-closed-Abbruch der Engine: selbst wenn die
+    Engine wider Erwarten leeres JSON zurueckgibt, wird es NICHT gepusht, damit es
+    den guten Stand nicht ueberschreibt (Clobber)."""
+    if not isinstance(data, dict):
+        return False
+    return not data.get("teams") and not data.get("games") and not data.get("rankings")
+
+
 def run_once(wp, engine, pusher, now):
     """Fuehrt einen Lauf aus und gibt die IDs der erfolgreich aufgefrischten Events zurueck.
 
@@ -25,6 +36,8 @@ def run_once(wp, engine, pusher, now):
                 url=e["url"], id=e["id"], name=e.get("name", ""),
                 season=e.get("saison", ""), live=bool(e.get("live")),
             )
+            if _is_degenerate(data):
+                raise RuntimeError("leere/entartete Daten – nicht gepusht (Fetch vermutlich fehlgeschlagen)")
             pusher.push(e["id"], data, e.get("views"))
             refreshed.append(event_id)
         except Exception as exc:  # Fehler je Event isolieren

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import re
+import sys
 
 from rinkmaster.model import Game, Tournament, to_json
 from rinkmaster.numbering import assign_numbers, game_key
@@ -98,6 +99,16 @@ def build_tournament(pages: dict[str, str | None], discovery: dict, meta: dict) 
     )
 
 
+def is_degenerate(tournament: Tournament) -> bool:
+    """True, wenn das Ergebnis komplett leer ist (0 Teams, 0 Spiele, 0 Ranglisten).
+
+    Das passiert, wenn der Fetch fehlschlug oder blockiert war (``http_get`` ->
+    None -> leere Seiten). Ein echtes Turnier hat immer mindestens Teams. Solche
+    entarteten Daten duerfen nicht veroeffentlicht werden, sonst ueberschreiben
+    sie den guten Stand (Clobber)."""
+    return not tournament.teams and not tournament.games and not tournament.rankings
+
+
 def _cli(argv: list[str] | None = None) -> None:
     import argparse
 
@@ -114,11 +125,21 @@ def _cli(argv: list[str] | None = None) -> None:
 
     base = args.base_url if args.base_url.endswith("/") else args.base_url + "/"
     nav = http_get(base + "nav.html")
-    discovery = discover(nav) if nav else {"rankings": [], "teams_page": None, "current_page": None}
+    if nav is None:
+        # Fail closed: Fetch fehlgeschlagen oder blockiert (z.B. Rechenzentrums-IP).
+        # Kein Output schreiben -> der Runner wirft (check=True) und behaelt den letzten Stand.
+        print("[build] nav.html nicht ladbar – Fetch fehlgeschlagen oder blockiert. Kein Output.",
+              file=sys.stderr)
+        raise SystemExit(2)
+    discovery = discover(nav)
     pages = load_pages(base)
     tournament = build_tournament(pages, discovery, meta={
         "id": args.id, "name": args.name, "season": args.season, "live": args.live,
     })
+    if is_degenerate(tournament):
+        print("[build] Entartetes Ergebnis: 0 Teams/Spiele/Ranglisten – vermutlich fehlgeschlagener "
+              "Fetch. Kein Output.", file=sys.stderr)
+        raise SystemExit(3)
     output = to_json(tournament)
     if args.out:
         with open(args.out, "w", encoding="utf-8") as fh:
