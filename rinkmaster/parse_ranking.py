@@ -14,12 +14,29 @@ def parse_ranking(index_html: str, ranking_id: str = "ranking0",
     rows: list[RankingRow] = []
     if table is None:
         return Ranking(id=ranking_id, label=label, rows=rows)
+
+    # Spalten ueber die Header-Zeile zuordnen. Die Spaltenzahl variiert je Turnier
+    # (z.B. mit/ohne "Pt. Dir."); feste Indizes wuerden "Spiele" sonst verschieben.
+    header = table.select_one(".row.title")
+    col: dict[str, int] = {}
+    if header:
+        for i, c in enumerate(header.find_all("div", class_="cell", recursive=False)):
+            name = c.get_text(strip=True)
+            if name and name not in col:
+                col[name] = i
+
+    def val(cells: list, name: str) -> int | None:
+        i = col.get(name)
+        if i is None or i >= len(cells):
+            return None
+        return int_or_none(cells[i].get_text(strip=True))
+
     for row in table.select(".row"):
         classes = row.get("class", [])
         if "title" in classes:
             continue
         cells = row.find_all("div", class_="cell", recursive=False)
-        if len(cells) < 7:
+        if len(cells) < 3:          # mind. Rang + Team + eine Kennzahl
             continue
         team_cell = cells[1]
         link = team_cell.select_one(".teamname a")
@@ -30,10 +47,10 @@ def parse_ranking(index_html: str, ranking_id: str = "ranking0",
             rank=int_or_none(cells[0].get_text(strip=True)),
             team_id=team_id,
             team_name=team_name,
-            points=int_or_none(cells[2].get_text(strip=True)),
-            ends=int_or_none(cells[3].get_text(strip=True)),
-            stones=int_or_none(cells[4].get_text(strip=True)),
-            pt_dir=int_or_none(cells[5].get_text(strip=True)),
-            played=int_or_none(cells[6].get_text(strip=True)),
+            points=val(cells, "Punkte"),
+            ends=val(cells, "Ends"),
+            stones=val(cells, "Steine"),
+            pt_dir=val(cells, "Pt. Dir."),
+            played=val(cells, "Spiele"),
         ))
     return Ranking(id=ranking_id, label=label, rows=rows)
