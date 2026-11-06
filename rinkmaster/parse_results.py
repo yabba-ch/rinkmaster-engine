@@ -40,6 +40,31 @@ def parse_scoreebe(scoreebe: Tag) -> tuple[list[GameTeam], str | None]:
     return teams, hammer
 
 
+def parse_scorepes(block: Tag) -> list[GameTeam]:
+    """Liest einen ``.scorepes``-Block (Weinfelden-Quellen, z.B. TGM/cc-tg):
+    je Team eine Zeile ``.row.scoreplayed`` mit Name und einer ``.cell.pes``-
+    Zelle ``"P-E-S"`` (Punkte-Ends-Steine). Kein End-für-End-Score verfügbar,
+    darum bleibt ``ends`` leer; ``total`` = Steine (S), das Spielergebnis.
+    """
+    teams: list[GameTeam] = []
+    for row in block.find_all("div", class_="row", recursive=False):
+        if "scoreplayed" not in row.get("class", []):   # subtitle2-Kopf überspringen
+            continue
+        cells = row.find_all("div", class_="cell", recursive=False)
+        if len(cells) < 2:
+            continue
+        name = cells[0].get_text(strip=True)
+        parts = cells[-1].get_text(strip=True).split("-")
+        p, e, s = (parts + [None, None, None])[:3] if len(parts) == 3 else (None, None, None)
+        teams.append(GameTeam(
+            name=name,
+            total=int_or_none(s),
+            points=int_or_none(p),
+            ends_won=int_or_none(e),
+        ))
+    return teams
+
+
 def parse_results(index_html: str) -> list[Game]:
     soup = BeautifulSoup(index_html, "html.parser")
     container = soup.select_one(".table.results")
@@ -61,5 +86,12 @@ def parse_results(index_html: str) -> list[Game]:
             games.append(Game(
                 round=rnd, date=date, time=time, venue=venue, rink=rink,
                 status="final", hammer_team=hammer, teams=teams,
+            ))
+        elif "scorepes" in classes:
+            rink_cell = child.select_one(".row.subtitle2 .cell.teamname")
+            rink = rink_cell.get_text(strip=True) if rink_cell else None
+            games.append(Game(
+                round=rnd, date=date, time=time, venue=venue, rink=rink,
+                status="final", hammer_team=None, teams=parse_scorepes(child),
             ))
     return games

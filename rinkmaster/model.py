@@ -32,6 +32,8 @@ class GameTeam:
     stone_color: str | None = None
     total: int | None = None
     ends: list[int | None] = field(default_factory=list)
+    points: int | None = None     # nur .scorepes (Weinfelden): Matchpunkte (P)
+    ends_won: int | None = None   # nur .scorepes (Weinfelden): gewonnene Ends (E)
 
 
 @dataclass

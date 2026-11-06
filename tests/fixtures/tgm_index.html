@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TGM 2026 / 2027 - Zwischenrangliste um 08:44</title>
+  <meta name="description" content="Rinkmaster">
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <style>
+    /* Basiseinstellungen */
+    :root {
+      --line: #d0d7de;
+      --link: #0000C0;
+      --brand-rgb: 0,128,192;
+      --brand: rgba(var(--brand-rgb), 1);
+      --brand-bright: rgba(var(--brand-rgb), 0.7);
+      --brand-brighter: rgba(var(--brand-rgb), 0.2);
+      --brand-fg: rgb(0,0,0);
+      --fg: #111;
+      --maxw:1000px;
+      --ptop:15px;
+      --hover:#efefef;
+    }
+    
+    body {margin:0; font:14px/1.45 systemui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; color:var(--fg);}
+    #wrap{max-width:var(--maxw); margin:0 auto; padding:0 12px 16px;}
+    a, a:visited {color:var(--link); text-decoration:none;}
+    a:hover {text-decoration:underline;}
+    hr {margin-top:15px; margin-bottom:15px; border:none; border-top: 5px ridge var(--line); border-radius: 6px;}
+    
+    .pagetitle {max-width:var(--maxw); margin:12px auto 8px; padding:8px 12px; text-align:center;font-weight:700; font-size:22px; background:var(--brand); color:var(--brand-fg); border: 1px solid var(--line); border-radius:10px;}
+    .section {padding-top:20px; padding-bottom:10px; font-weight:700; font-size:18px;}
+    
+    /* Generische Flexbox-Settings */
+    .row {display:flex;}
+    .cell {border-right:1px solid var(--line); border-top:1px solid var(--line); align-content:center;}
+    .cell:first-child {border-left:1px solid var(--line);}
+    .row:last-child .cell {border-bottom:1px solid var(--line);}
+    .row.title .cell {background: var(--brand); color:var(--brand-fg); height:30px; font-weight:700;}
+    .row.subtitle .cell {background:var(--brand-bright); color:var(--brand-fg); height:25px; font-weight:700;}
+    .row.subtitle .cell.title {flex:1; padding-left:5px;height:max-content;}
+    .row.subtitle2 .cell {background:var(--brand-brighter); color:var(--fg); height:25px; font-weight:700;}
+    .row.subtitle2 .cell.title {flex:1; padding-left:5px;}
+    .row:not(.title):not(.subtitle):not(.subtitle2):hover .cell {background:var(--hover);color:var(--fg);}
+    
+    /* Navigation */
+    #navigation .row.menu {display:flex; align-items:center; gap:15px; padding-bottom:10px; padding-top:10px;}
+    #navigation .row.menu .cell {border:none;}
+    #navigation .row.menu .cell:nth-child(3) {margin-left:auto;}
+    #navigation .active {font-weight:700 !important;text-decoration:underline;}
+    #navigation .grid {display:grid; grid-template-columns: max-content 1fr; column-gap: 12px; row-gap: 4px; align-items:center;}
+    #navigation .grid > .row.ranking{ display: contents;}
+    #navigation .cell {border:none; font-weight:normal;}
+    
+    /* Rangliste */
+    .table.ranking .cell.num {width:50px; text-align:center;}
+    .table.ranking .cell.team {flex:1; padding-left:5px;}
+    .table.ranking .cell.ref {width:10px; border:none; align-self:flex-start; font-size:11px;padding-left:5px;}
+    .table.ranking .row.title .cell.ref {background:none;}
+    .table.ranking .row.subtitle .cell.ref {background:none;}
+    .table.ranking .teammember {font-size:11px;}
+    .table.legend {padding-top:5px;}
+    .table.legend .cell {border:none;}
+    .table.legend .cell.refsymbol {width:20px; font-size:10px; display:inline; padding-left:5px;}
+    
+    /* Resultate */
+    .table.results .cell.plan {flex:1; padding-left:5px;}
+    .table.results .cell.teamname {flex:1; padding-left:5px;}
+    .table.results .cell.lsd {width:50px; text-align:center;}
+    .table.results .cell.score {width:30px; text-align:center;}
+    .table.results .cell.total {width:60px; text-align:center; font-weight:bold;}
+    .table.results .cell.rink {width:60px; text-align:center;}
+    .table.results .cell.pes {width:90px;; text-align:center; }
+    .total.resign {font-size:0.8em;}
+    
+    /* Paarungen */
+    .table.plan .cell.rink {width:60px; text-align:center;}
+    .table.plan .cell.team {flex:1; padding-left:5px;}
+    
+    /* Aktuelle Spiele */
+    .table.current .cell.plan {flex:1; padding-left:5px;}
+    .table.current .cell.teamname {flex:1; padding-left:5px;}
+    .table.current .cell.lsd {width:50px; text-align:center;}
+    .table.current .cell.score {width:30px; text-align:center;}
+    .table.current .cell.total {width:60px; text-align:center; font-weight:bold;}
+    /* Mannschaften */
+    .table.menu .cell {border:none; flex:1;}
+    .table.menu .row:hover .cell {background:none;}
+    .table.team .cell.team {flex:1; padding-left:5px;}
+    .table.team .cell.pos {width:50px; text-align:center;}
+    .table.team .cell.player {flex:1; padding-left:5px;}
+    .table.team .cell.mc {widtH:100px; text-align:center;}
+    .table.team .cell.plan {flex:1; padding-left:5px;}
+    .table.team .cell.teamname {flex:1; padding-left:5px;}
+    .table.team .cell.lsd {width:50px; text-align:center;}
+    .table.team .cell.score {width:30px; text-align:center;}
+    .table.team .cell.total {width:60px; text-align:center; font-weight:bold;}
+    .table.team .cell.rink {width:60px; text-align:center;}
+    .table.team .cell.pes {width:90px;; text-align:center; }
+    /* DSC-Rangliste */
+    .table.dsc .cell.team {flex:1; padding-left:5px;}
+    .table.dsc .cell.score {width:60px; text-align:center;}
+    .table.dsc .lsd.strike {color:red;}
+    .table.dsc .cell.total {width:60px; text-align:center; font-weight:700;}
+    
+    /* Fusszeile */
+    #footer {padding-top:var(--ptop);}
+    #footer .row {display:flex; justify-content:space-between; align-items:center;}
+    #footer .cell {flex: 0 1 auto; border:none; font-weight: 600;}
+    #footer .cell.footerright {text-align:right;}
+    
+    /* Responsive */
+    @media (max-width:800px) {
+      body {font-size:11px;}
+      .pagetitle {padding-top:4px; padding-bottom:4px; font-size:20px;}
+      .row.title .cell {height:25px;}
+      .section {font-size:15px; padding-top:12px; padding-bottom:5px;}
+      .row.subtitle .cell {height:20px;}
+      .row.subtitle2 .cell {height:20px;}
+      .table.ranking .teammember {display:none}
+      .table.ranking .cell.num {width:40px;}
+      .table.ranking .cell.ref {font-size:10px;}
+      .table.results .cell.lsd {display:none;}
+      .table.results .scorepes .cell.lsd {display:block; width:35px;}
+      .table.results .cell.score {width:15px;}
+      .table.results .cell.total {width:25px;}
+      .table.results .row.subtitle2 .cell.total {color:transparent;}
+      .table.results .cell.rink {display:none;}
+      .table.results .cell.pes {width:50px;}
+      .table.results .row.result .cell:nth-child(2) {border-left:1px solid var(--line);}
+      .table.result .cell.rink {width:40px;}
+      .table.current .cell.lsd {display:none;}
+      .table.current .cell.score {width:15px;}
+      .table.current .cell.total {width:25px;}
+      .table.current .row.subtitle2 .cell.total {color:transparent;}
+      .table.current .cell.rink {display:none;}
+      .table.current .cell.pes {width:80px;}
+      .table.current .row.result .cell:nth-child(2) {border-left:1px solid var(--line);}
+      .table.team .cell.pos {width:40px;}
+      .table.team .cell.mc {width:60px;}
+      .table.team .cell.lsd {display:none;}
+      .table.team .scorepes .cell.lsd {display:block; width:35px;}
+      .table.team .cell.score {width:15px;}
+      .table.team .cell.total {width:25px;}
+      .table.team .cell.pes {width:50px;}
+      .table.team .row.result.unplayed .cell.rink {width:40px;}
+      .table.team .row.result.unplayed .cell.pes {display:none;}
+      .table.team .row.result.played .cell.rink {display:none;}
+      .table.team .row.result.played {border-left: 1px solid var(--line);}
+      .table.plan .cell.rink {width:40px;}
+      .table.dsc .cell.score {width:40px;}
+      .table.dsc .cell.total {width:40px;}
+    }
+  </style>
+  <link rel="stylesheet" href="styles.css" >
+</head>
+<body>
+<div id="wrap">
+  <div id="topline">
+    <div id="topleft"></div>
+    <div id="topright"></div>
+  </div>
+  <div id="navigation"></div>
+<div class="pagetitle">TGM 2026 / 2027</div>
+<div id="pageinfo" data-pageid="ranking0" hidden></div>
+<div id="ranking">
+<div class="section">Zwischenrangliste um 08:44</div>
+<div class="table ranking">
+  <div class="row title"><div class="cell num">Rang</div><div class="cell team">Mannschaft</div><div class="cell num">Punkte</div><div class="cell num">Pt. Dir.</div><div class="cell num">Ends</div><div class="cell num">Steine</div><div class="cell num">Spiele</div><div class="cell"></div></div>
+  <div class="row"><div class="cell num">1</div><div class="cell team"><div class="teamname"><a href="m.html#team8">8 Damen / Bianca Kämpf</a></div><div class="teammember">Ursi Miller (Skip); Marika Balla; Rebekka Richter; Martina Mark; Bianca Kämpf; Lou Greiner (Skip); Mara Brunschwiler</div></div><div class="cell num">2</div><div class="cell num">0</div><div class="cell num">6</div><div class="cell num">7</div><div class="cell num">1</div><div class="cell"></div></div>
+  <div class="row"><div class="cell num">2</div><div class="cell team"><div class="teamname"><a href="m.html#team1">1 Junker / Pascal Junker</a></div><div class="teammember">Pascal Junker (Skip); Chantal Forrer; Markus Müller; Nick Tobler; Maggie Tobler (Skip)</div></div><div class="cell num">2</div><div class="cell num">0</div><div class="cell num">5</div><div class="cell num">8</div><div class="cell num">1</div><div class="cell"></div></div>
+  <div class="row"><div class="cell num">3</div><div class="cell team"><div class="teamname"><a href="m.html#team2">2 Signer / Mario Signer</a></div><div class="teammember">Mario Signer (Skip); Herbert Bartholdi; Dominik Sauter; Jakob Mark; Andy Gehrig; Simon Sauter</div></div><div class="cell num">0</div><div class="cell num">0</div><div class="cell num">3</div><div class="cell num">4</div><div class="cell num">1</div><div class="cell"></div></div>
+  <div class="row"><div class="cell num">4</div><div class="cell team"><div class="teamname"><a href="m.html#team7">7 Aeberhard / Noldi Aeberhard</a></div><div class="teammember">Noldi Aeberhard (Skip); Jeannine Ballabio; Markus Schweiwiller; Viktor Heer; Charly Forrer; Martin Dihrik</div></div><div class="cell num">0</div><div class="cell num">0</div><div class="cell num">2</div><div class="cell num">6</div><div class="cell num">1</div><div class="cell"></div></div>
+  <div class="row"><div class="cell num">5</div><div class="cell team"><div class="teamname"><a href="m.html#team3">3 Witzig / Fredy Witzig</a></div><div class="teammember">Fredy Witzig (Skip); Hans Engler; Cedric Estapé; Leo Eisenring; Christine Kind</div></div><div class="cell num">0</div><div class="cell num">0</div><div class="cell num">0</div><div class="cell num">0</div><div class="cell num">0</div><div class="cell"></div></div>
+  <div class="row"><div class="cell num"></div><div class="cell team"><div class="teamname"><a href="m.html#team4">4 Fröhli / Dani Fröhli</a></div><div class="teammember">Dani Fröhli (Skip); Michi Höchner; Helmut Reif; Willi Roth; Werner Brauchli; Joel Brunschwiler</div></div><div class="cell num">0</div><div class="cell num">0</div><div class="cell num">0</div><div class="cell num">0</div><div class="cell num">0</div><div class="cell"></div></div>
+  <div class="row"><div class="cell num"></div><div class="cell team"><div class="teamname"><a href="m.html#team5">5 Junioren / Ian Brunschwiler</a></div><div class="teammember">Ian Brunschwiler (Skip); Jakob Hartmann; Luca Schnyder</div></div><div class="cell num">0</div><div class="cell num">0</div><div class="cell num">0</div><div class="cell num">0</div><div class="cell num">0</div><div class="cell"></div></div>
+  <div class="row"><div class="cell num"></div><div class="cell team"><div class="teamname"><a href="m.html#team6">6 Hübner / Peter Hübner</a></div><div class="teammember">Peter Hübner (Skip); Regula Weder; Judith Schätti; Thomas Grossert; Andy Hüppi</div></div><div class="cell num">0</div><div class="cell num">0</div><div class="cell num">0</div><div class="cell num">0</div><div class="cell num">0</div><div class="cell"></div></div>
+  <div class="row"><div class="cell num"></div><div class="cell team"><div class="teamname"><a href="m.html#team9">9 Fässler / Markus Fässler</a></div><div class="teammember">Markus Fässler (Skip); Christoph Bosshard; Samy Furrer; Stefan Kessler; Harald Sturm</div></div><div class="cell num">0</div><div class="cell num">0</div><div class="cell num">0</div><div class="cell num">0</div><div class="cell num">0</div><div class="cell"></div></div>
+</div>
+</div>
+<div id="results">
+<div class="section">Bisherige Resultate</div>
+<div class="table results">
+<div class="row subtitle"><div class="cell plan">4 - Runde 1, Donnerstag 5. November 2026, 20:00</div></div>
+<div class="scorepes"><div class="row subtitle2"><div class="cell teamname">Rink B</div><div class="cell pes">P-E-S</div></div><div class="row scoreplayed"><div class="cell teamname">7 Aeberhard / Noldi Aeberhard</div><div class="cell pes">0-2-6</div></div><div class="row scoreplayed"><div class="cell teamname">8 Damen / Bianca Kämpf</div><div class="cell pes">2-6-7</div></div></div>
+<div class="row subtitle"><div class="cell plan">3 - Runde 1, Donnerstag 5. November 2026, 20:00</div></div>
+<div class="scorepes"><div class="row subtitle2"><div class="cell teamname">Rink A</div><div class="cell pes">P-E-S</div></div><div class="row scoreplayed"><div class="cell teamname">1 Junker / Pascal Junker</div><div class="cell pes">2-5-8</div></div><div class="row scoreplayed"><div class="cell teamname">2 Signer / Mario Signer</div><div class="cell pes">0-3-4</div></div></div>
+</div>
+</div>
+<div id="plan">
+<div class="section">Nächste Spiele</div>
+<div class="table plan">
+<div class="row subtitle"><div class="cell title">1 - Runde 1, Donnerstag 5. November 2026, 18:00</div></div>
+<div class="row pairing"><div class="cell rink">Rink A</div><div class="cell team">3 Witzig / Fredy Witzig</div><div class="cell team">4 Fröhli / Dani Fröhli</div></div>
+<div class="row subtitle"><div class="cell title">2 - Runde 1, Donnerstag 5. November 2026, 18:00</div></div>
+<div class="row pairing"><div class="cell rink">Rink B</div><div class="cell team">5 Junioren / Ian Brunschwiler</div><div class="cell team">6 Hübner / Peter Hübner</div></div>
+<div class="row subtitle"><div class="cell title">5 - Runde 2, Dienstag 10. November 2026, 18:00</div></div>
+<div class="row pairing"><div class="cell rink">Rink A</div><div class="cell team">8 Damen / Bianca Kämpf</div><div class="cell team">9 Fässler / Markus Fässler</div></div>
+<div class="row subtitle"><div class="cell title">6 - Runde 2, Donnerstag 19. November 2026, 18:00</div></div>
+<div class="row pairing"><div class="cell rink">Rink A</div><div class="cell team">4 Fröhli / Dani Fröhli</div><div class="cell team">5 Junioren / Ian Brunschwiler</div></div>
+<div class="row subtitle"><div class="cell title">7 - Runde 2, Donnerstag 19. November 2026, 18:00</div></div>
+<div class="row pairing"><div class="cell rink">Rink B</div><div class="cell team">2 Signer / Mario Signer</div><div class="cell team">3 Witzig / Fredy Witzig</div></div>
+<div class="row subtitle"><div class="cell title">8 - Runde 2, Donnerstag 19. November 2026, 20:00</div></div>
+<div class="row pairing"><div class="cell rink">Rink B</div><div class="cell team">6 Hübner / Peter Hübner</div><div class="cell team">7 Aeberhard / Noldi Aeberhard</div></div>
+<div class="row subtitle"><div class="cell title">9 - Runde 3, Mittwoch 25. November 2026, 18:00</div></div>
+<div class="row pairing"><div class="cell rink">Rink C</div><div class="cell team">3 Witzig / Fredy Witzig</div><div class="cell team">5 Junioren / Ian Brunschwiler</div></div>
+<div class="row subtitle"><div class="cell title">10 - Runde 3, Donnerstag 26. November 2026, 20:00</div></div>
+<div class="row pairing"><div class="cell rink">Rink B</div><div class="cell team">1 Junker / Pascal Junker</div><div class="cell team">8 Damen / Bianca Kämpf</div></div>
+<div class="row subtitle"><div class="cell title">11 - Runde 5, Mittwoch 2. Dezember 2026, 18:00</div></div>
+<div class="row pairing"><div class="cell rink">Rink A</div><div class="cell team">1 Junker / Pascal Junker</div><div class="cell team">3 Witzig / Fredy Witzig</div></div>
+<div class="row subtitle"><div class="cell title">12 - Runde 3, Mittwoch 2. Dezember 2026, 20:00</div></div>
+<div class="row pairing"><div class="cell rink">Rink A</div><div class="cell team">4 Fröhli / Dani Fröhli</div><div class="cell team">6 Hübner / Peter Hübner</div></div>
+<div class="row subtitle"><div class="cell title">13 - Runde 3, Mittwoch 2. Dezember 2026, 20:00</div></div>
+<div class="row pairing"><div class="cell rink">Rink B</div><div class="cell team">7 Aeberhard / Noldi Aeberhard</div><div class="cell team">9 Fässler / Markus Fässler</div></div>
+<div class="row subtitle"><div class="cell title">15 - Runde 4, Mittwoch 9. Dezember 2026, 19:00</div></div>
+<div class="row pairing"><div class="cell rink">Rink B</div><div class="cell team">4 Fröhli / Dani Fröhli</div><div class="cell team">7 Aeberhard / Noldi Aeberhard</div></div>
+<div class="row subtitle"><div class="cell title">16 - Runde 4, Donnerstag 10. Dezember 2026, 18:00</div></div>
+<div class="row pairing"><div class="cell rink">Rink A</div><div class="cell team">5 Junioren / Ian Brunschwiler</div><div class="cell team">8 Damen / Bianca Kämpf</div></div>
+<div class="row subtitle"><div class="cell title">17 - Runde 4, Donnerstag 10. Dezember 2026, 20:00</div></div>
+<div class="row pairing"><div class="cell rink">Rink A</div><div class="cell team">1 Junker / Pascal Junker</div><div class="cell team">6 Hübner / Peter Hübner</div></div>
+<div class="row subtitle"><div class="cell title">18 - Runde 4, Donnerstag 10. Dezember 2026, 20:00</div></div>
+<div class="row pairing"><div class="cell rink">Rink B</div><div class="cell team">2 Signer / Mario Signer</div><div class="cell team">9 Fässler / Markus Fässler</div></div>
+<div class="row subtitle"><div class="cell title">20 - Runde 5, Mittwoch 16. Dezember 2026, 19:00</div></div>
+<div class="row pairing"><div class="cell rink">Rink C</div><div class="cell team">6 Hübner / Peter Hübner</div><div class="cell team">9 Fässler / Markus Fässler</div></div>
+<div class="row subtitle"><div class="cell title">19 - Runde 5, Donnerstag 17. Dezember 2026, 18:00</div></div>
+<div class="row pairing"><div class="cell rink">Rink B</div><div class="cell team">5 Junioren / Ian Brunschwiler</div><div class="cell team">7 Aeberhard / Noldi Aeberhard</div></div>
+<div class="row subtitle"><div class="cell title">21 - Runde 6, Donnerstag 17. Dezember 2026, 20:00</div></div>
+<div class="row pairing"><div class="cell rink">Rink C</div><div class="cell team">4 Fröhli / Dani Fröhli</div><div class="cell team">2 Signer / Mario Signer</div></div>
+<div class="row subtitle"><div class="cell title">22 - Runde 6, Mittwoch 6. Januar 2027, 19:00</div></div>
+<div class="row pairing"><div class="cell rink">Rink B</div><div class="cell team">9 Fässler / Markus Fässler</div><div class="cell team">3 Witzig / Fredy Witzig</div></div>
+<div class="row subtitle"><div class="cell title">23 - Runde 6, Mittwoch 6. Januar 2027, 18:00</div></div>
+<div class="row pairing"><div class="cell rink">Rink C</div><div class="cell team">1 Junker / Pascal Junker</div><div class="cell team">7 Aeberhard / Noldi Aeberhard</div></div>
+<div class="row subtitle"><div class="cell title">24 - Runde 6, Donnerstag 7. Januar 2027, 18:00</div></div>
+<div class="row pairing"><div class="cell rink">Rink A</div><div class="cell team">6 Hübner / Peter Hübner</div><div class="cell team">8 Damen / Bianca Kämpf</div></div>
+<div class="row subtitle"><div class="cell title">14 - Runde 5, Donnerstag 14. Januar 2027, 18:00</div></div>
+<div class="row pairing"><div class="cell rink">Rink C</div><div class="cell team">2 Signer / Mario Signer</div><div class="cell team">8 Damen / Bianca Kämpf</div></div>
+<div class="row subtitle"><div class="cell title">25 - Runde 7, Donnerstag 21. Januar 2027, 18:00</div></div>
+<div class="row pairing"><div class="cell rink">Rink B</div><div class="cell team">1 Junker / Pascal Junker</div><div class="cell team">5 Junioren / Ian Brunschwiler</div></div>
+<div class="row subtitle"><div class="cell title">26 - Runde 7, Donnerstag 21. Januar 2027, 20:00</div></div>
+<div class="row pairing"><div class="cell rink">Rink A</div><div class="cell team">4 Fröhli / Dani Fröhli</div><div class="cell team">9 Fässler / Markus Fässler</div></div>
+<div class="row subtitle"><div class="cell title">27 - Runde 7, Donnerstag 21. Januar 2027, 20:00</div></div>
+<div class="row pairing"><div class="cell rink">Rink B</div><div class="cell team">2 Signer / Mario Signer</div><div class="cell team">7 Aeberhard / Noldi Aeberhard</div></div>
+<div class="row subtitle"><div class="cell title">28 - Runde 7, Donnerstag 21. Januar 2027, 18:00</div></div>
+<div class="row pairing"><div class="cell rink">Rink A</div><div class="cell team">8 Damen / Bianca Kämpf</div><div class="cell team">3 Witzig / Fredy Witzig</div></div>
+<div class="row subtitle"><div class="cell title">29 - Runde 8, Mittwoch 27. Januar 2027, 18:00</div></div>
+<div class="row pairing"><div class="cell rink">Rink B</div><div class="cell team">2 Signer / Mario Signer</div><div class="cell team">5 Junioren / Ian Brunschwiler</div></div>
+<div class="row subtitle"><div class="cell title">30 - Runde 8, Mittwoch 27. Januar 2027, 20:00</div></div>
+<div class="row pairing"><div class="cell rink">Rink A</div><div class="cell team">1 Junker / Pascal Junker</div><div class="cell team">9 Fässler / Markus Fässler</div></div>
+<div class="row subtitle"><div class="cell title">31 - Runde 8, Mittwoch 27. Januar 2027, 18:00</div></div>
+<div class="row pairing"><div class="cell rink">Rink B</div><div class="cell team">4 Fröhli / Dani Fröhli</div><div class="cell team">8 Damen / Bianca Kämpf</div></div>
+<div class="row subtitle"><div class="cell title">32 - Runde 8, Dienstag 9. Februar 2027, 18:00</div></div>
+<div class="row pairing"><div class="cell rink">Rink A</div><div class="cell team">3 Witzig / Fredy Witzig</div><div class="cell team">6 Hübner / Peter Hübner</div></div>
+<div class="row subtitle"><div class="cell title">33 - Runde 9, Dienstag 9. Februar 2027, 20:00</div></div>
+<div class="row pairing"><div class="cell rink">Rink A</div><div class="cell team">1 Junker / Pascal Junker</div><div class="cell team">4 Fröhli / Dani Fröhli</div></div>
+<div class="row subtitle"><div class="cell title">34 - Runde 9, Dienstag 23. Februar 2027, 18:00</div></div>
+<div class="row pairing"><div class="cell rink">Rink A</div><div class="cell team">5 Junioren / Ian Brunschwiler</div><div class="cell team">9 Fässler / Markus Fässler</div></div>
+<div class="row subtitle"><div class="cell title">35 - Runde 9, Mittwoch 24. Februar 2027, 18:00</div></div>
+<div class="row pairing"><div class="cell rink">Rink A</div><div class="cell team">2 Signer / Mario Signer</div><div class="cell team">6 Hübner / Peter Hübner</div></div>
+<div class="row subtitle"><div class="cell title">36 - Runde 9, Mittwoch 24. Februar 2027, 18:00</div></div>
+<div class="row pairing"><div class="cell rink">Rink B</div><div class="cell team">3 Witzig / Fredy Witzig</div><div class="cell team">7 Aeberhard / Noldi Aeberhard</div></div>
+</div>
+</div>
+<div id="footer">
+  <div class="row">
+    <div class="cell footerleft">Spielstand vom: 06.11.2026 / 08:44:51</div>
+    <div class="cell footerright"><a href="https://rinkmaster.ch" target="_blank">Rinkmaster 14.6.14, lizenziert für Curling Club Thurgau</a></div>
+  </div>
+</div>
+</div>
+<script>
+  var nav = document.getElementById('navigation');
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if(this.readyState == 4 && this.status == 200) {
+      nav.innerHTML = this.responseText;
+      let el = document.getElementById('pageinfo');
+      let pageid = el ? el.dataset.pageid : '';
+      if(pageid) el = document.getElementById(pageid);
+      if(el) el.classList.add('active');
+    }
+  }
+  xhttp.open("GET", 'nav.html', true);
+  try {
+    xhttp.overrideMimeType('text/html; charset=UTF-8');
+  } finally {}
+  xhttp.setRequestHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  xhttp.send();
+</script>
+</body>
+</html>
+
